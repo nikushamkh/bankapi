@@ -21,7 +21,14 @@ public class WebSecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/accounts/**").authenticated()
+                        .requestMatchers(
+                                "/api/accounts/**",
+                                "/swagger-ui.html",
+                                "/api/accounts",
+                                "/api/accounts/{sourceId}/transfer/{destinationId}",
+                                "/api/accounts/{id}/withdraw",
+                                "/api/accounts/{id}"
+                        ).authenticated()
                         .anyRequest().permitAll())
                 .httpBasic(httpBasic -> httpBasic.realmName("BankAPIRealm"));
         return http.build();

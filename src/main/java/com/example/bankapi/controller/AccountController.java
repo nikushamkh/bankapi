@@ -4,6 +4,8 @@ package com.example.bankapi.controller;
 import com.example.bankapi.model.Account;
 import com.example.bankapi.service.AccountService;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,9 +16,11 @@ import java.math.BigDecimal;
 public class AccountController {
     private final AccountService accountService;
 
+    @Autowired
     public AccountController(AccountService accountService) {
         this.accountService = accountService;
     }
+
 
     @PostMapping
     public ResponseEntity<Account> createAccount(@RequestBody Account account) {
@@ -41,13 +45,18 @@ public class AccountController {
     }
 
     @PostMapping("/{sourceId}/transfer/{destinationId}")
-    public ResponseEntity<?> transfer(@PathVariable Long sourceId, @PathVariable Long destinationId, @RequestParam BigDecimal amount) {
+    public ResponseEntity<?> transferMoney(
+            @PathVariable Long sourceId,
+            @PathVariable Long destinationId,
+            @RequestParam BigDecimal amount) {
+
         try {
-            Account sourceAccount = accountService.transfer(sourceId, destinationId, amount);
-            return ResponseEntity.ok(sourceAccount);
+            Account updatedSourceAccount = accountService.transfer(sourceId, destinationId, amount);
+            return ResponseEntity.ok(updatedSourceAccount);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
 
 }

@@ -25,7 +25,7 @@ public class WebSecurityConfig {
                                 "/api/accounts/**",
                                 "/swagger-ui.html",
                                 "/api/accounts",
-                                "/api/accounts/{sourceId}/transfer/{destinationId}",
+//                                "/api/accounts/{sourceId}/transfer/{destinationId}",
                                 "/api/accounts/{id}/withdraw",
                                 "/api/accounts/{id}"
                         ).authenticated()

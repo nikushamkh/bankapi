@@ -2,18 +2,20 @@ package com.example.bankapi.service;
 
 import com.example.bankapi.model.Account;
 import com.example.bankapi.repository.AccountRepository;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 
-
 @Service
 public class AccountServiceImpl implements AccountService {
+    private final AccountRepository accountRepository;
+
     @Autowired
-    private AccountRepository accountRepository;
+    public AccountServiceImpl(AccountRepository accountRepository) {
+        this.accountRepository = accountRepository;
+    }
 
     @Override
     @Transactional
@@ -27,6 +29,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Account getAccount(Long accountId) {
+        // You should change to findByAccountNumber if accountNumber is used, otherwise findById for accountId.
         return accountRepository.findById(accountId).orElse(null);
     }
 
@@ -54,16 +57,14 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public Account transfer(Long sourceAccountId, Long destinationAccountId, BigDecimal amount) throws Exception {
-        Account sourceAccount = getAccount(sourceAccountId);
-        Account destinationAccount = getAccount(destinationAccountId);
-
-        if (sourceAccount == null || destinationAccount == null) {
-            throw new Exception("One or both accounts not found");
-        }
+    public Account transfer(Long sourceId, Long destinationId, BigDecimal amount) throws Exception {
+        Account sourceAccount = accountRepository.findById(sourceId)
+                .orElseThrow(() -> new Exception("Source account not found"));
+        Account destinationAccount = accountRepository.findById(destinationId)
+                .orElseThrow(() -> new Exception("Destination account not found"));
 
         if (sourceAccount.getBalance().compareTo(amount) < 0) {
-            throw new Exception("Insufficient funds");
+            throw new Exception("Insufficient funds in the source account");
         }
 
         sourceAccount.setBalance(sourceAccount.getBalance().subtract(amount));
@@ -72,7 +73,6 @@ public class AccountServiceImpl implements AccountService {
         accountRepository.save(sourceAccount);
         accountRepository.save(destinationAccount);
 
-        return sourceAccount; // Returning the source account for consistency with your design.
+        return sourceAccount;
     }
-
 }

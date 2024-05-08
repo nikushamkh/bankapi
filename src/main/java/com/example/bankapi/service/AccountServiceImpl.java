@@ -1,20 +1,25 @@
 package com.example.bankapi.service;
 
 import com.example.bankapi.model.Account;
+import com.example.bankapi.model.Transaction;
 import com.example.bankapi.repository.AccountRepository;
+import com.example.bankapi.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 @Service
 public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
+    private final TransactionRepository transactionRepository;
 
     @Autowired
-    public AccountServiceImpl(AccountRepository accountRepository) {
+    public AccountServiceImpl(AccountRepository accountRepository, TransactionRepository transactionRepository) {
         this.accountRepository = accountRepository;
+        this.transactionRepository = transactionRepository;
     }
 
     @Override
@@ -72,6 +77,12 @@ public class AccountServiceImpl implements AccountService {
 
         accountRepository.save(sourceAccount);
         accountRepository.save(destinationAccount);
+        Transaction transaction = new Transaction();
+        transaction.setSourceAccount(sourceAccount);
+        transaction.setDestinationAccount(destinationAccount);
+        transaction.setAmount(amount);
+        transaction.setTransactionDate(new Date());  // Current date and time
+        transactionRepository.save(transaction);
 
         return sourceAccount;
     }

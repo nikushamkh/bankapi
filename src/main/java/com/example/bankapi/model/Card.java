@@ -41,6 +41,5 @@ public class Card {
     private boolean isActive;
 
     public void setIsActive(boolean b) {
-        
     }
 }
